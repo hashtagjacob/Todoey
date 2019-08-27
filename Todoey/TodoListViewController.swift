@@ -10,20 +10,21 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = ["Do weird shit", "Fuck bitches", "Get paid"]
-    var userDefaults = UserDefaults()
+    var itemArray = [ListItem]()
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("items.plist")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let array = userDefaults.value(forKey: "itemArray") {
-            itemArray = array as! [String]
+        loadData()
         }
+        
+
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-    }
 
     // MARK: - Table view data source
 
@@ -34,7 +35,9 @@ class TodoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row]
+        cell.textLabel?.text = itemArray[indexPath.row].itemText
+        cell.accessoryType = itemArray[indexPath.row].isSelected ? .checkmark : .none
+        
         return cell
     }
     
@@ -44,12 +47,38 @@ class TodoListViewController: UITableViewController {
         
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
+            itemArray[indexPath.row].isSelected = false
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+            itemArray[indexPath.row].isSelected = true
         }
+        
+        saveData()
     }
 
    
+    fileprivate func saveData() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(self.itemArray)
+            try data.write(to: self.dataFilePath!)
+        } catch {
+            print("error!!! \(error)")
+        }
+    }
+    
+    func loadData() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([ListItem].self, from: data)
+            } catch {
+                print(error)
+            }
+            
+        }
+    }
+    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: "Dodaj nowy element", message: "", preferredStyle: .alert)
         var alertTextfield = UITextField()
@@ -57,9 +86,11 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Dodaj", style: .default) { (action) in
             print("dodaj clicked")
             if let result = alertTextfield.text {
-                self.itemArray.append(result)
+                let item = ListItem(text: result)
+                self.itemArray.append(item)
                 self.tableView.reloadData()
-                self.userDefaults.set(self.itemArray, forKey: "itemArray")
+                
+                self.saveData()
             }
         }
         

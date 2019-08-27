@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1ED58F8323155C49005FD0D7 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED58F8223155C49005FD0D7 /* ListItem.swift */; };
 		1EFD420823144A6D0010503D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFD420723144A6D0010503D /* AppDelegate.swift */; };
 		1EFD420D23144A6D0010503D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EFD420B23144A6D0010503D /* Main.storyboard */; };
 		1EFD420F23144A730010503D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EFD420E23144A730010503D /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1ED58F8223155C49005FD0D7 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		1EFD420423144A6D0010503D /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EFD420723144A6D0010503D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1EFD420C23144A6D0010503D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -35,6 +37,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1ED58F8123155C2B005FD0D7 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1ED58F8223155C49005FD0D7 /* ListItem.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		1EFD41FB23144A6D0010503D = {
 			isa = PBXGroup;
 			children = (
@@ -54,6 +64,7 @@
 		1EFD420623144A6D0010503D /* Todoey */ = {
 			isa = PBXGroup;
 			children = (
+				1ED58F8123155C2B005FD0D7 /* Model */,
 				1EFD420723144A6D0010503D /* AppDelegate.swift */,
 				1EFD420B23144A6D0010503D /* Main.storyboard */,
 				1EFD420E23144A730010503D /* Assets.xcassets */,
@@ -135,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ED58F8323155C49005FD0D7 /* ListItem.swift in Sources */,
 				1EFD421A23144C220010503D /* TodoListViewController.swift in Sources */,
 				1EFD420823144A6D0010503D /* AppDelegate.swift in Sources */,
 			);
