@@ -11,9 +11,12 @@ import UIKit
 class TodoListViewController: UITableViewController {
 
     var itemArray = ["Do weird shit", "Fuck bitches", "Get paid"]
-    
+    var userDefaults = UserDefaults()
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let array = userDefaults.value(forKey: "itemArray") {
+            itemArray = array as! [String]
+        }
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -56,6 +59,7 @@ class TodoListViewController: UITableViewController {
             if let result = alertTextfield.text {
                 self.itemArray.append(result)
                 self.tableView.reloadData()
+                self.userDefaults.set(self.itemArray, forKey: "itemArray")
             }
         }
         
@@ -66,6 +70,8 @@ class TodoListViewController: UITableViewController {
         
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
+        
+        
     }
     
 }
