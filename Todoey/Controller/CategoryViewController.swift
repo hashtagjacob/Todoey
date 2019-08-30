@@ -8,11 +8,12 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
 
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var categories = [Category]()
+    var categories: Results<Category>?
+    let realm = try! Realm()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,12 +29,12 @@ class CategoryViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return categories.count
+        return categories?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "Pusto :("
         
         return cell
     }
@@ -48,12 +49,13 @@ class CategoryViewController: UITableViewController {
         }
         
         let action = UIAlertAction(title: "Dodaj", style: .default) { (action) in
-            let category = Category(context: self.context)
-            category.name = alertTextField.text
-            self.categories.append(category)
-            self.tableView.reloadData()
+            let category = Category()
+            if let categoryName = alertTextField.text {
+                category.name = categoryName
+                self.tableView.reloadData()
+                self.saveData(category: category)
+            }
         }
-        saveData()
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
     }
@@ -66,26 +68,26 @@ class CategoryViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let index = tableView.indexPathForSelectedRow {
             let destinationVC = segue.destination as! TodoListViewController
-            destinationVC.selectedCategory = categories[index.row]
+            destinationVC.selectedCategory = categories?[index.row]
         }
     }
     
     //MARK: - database methods
     
-    func loadData(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        do {
-            categories = try context.fetch(request)
-        } catch {
-            print("error fetching data \(error)")
-        }
+    func loadData() {
+        categories = realm.objects(Category.self)
+        tableView.reloadData()
     }
     
-    func saveData() {
+    func saveData(category: Category) {
         do {
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("error savig data \(error)")
         }
+        tableView.reloadData()
     }
     
     
