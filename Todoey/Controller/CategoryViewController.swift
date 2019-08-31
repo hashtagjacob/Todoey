@@ -9,20 +9,29 @@
 import UIKit
 import CoreData
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
 
     var categories: Results<Category>?
     let realm = try! Realm()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.rowHeight = 100
         loadData()
+        tableView.separatorStyle = .none
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let colorHex = categories?.first?.colorHex {
+            navigationController?.navigationBar.barTintColor = UIColor(hexString: colorHex)
+        }
     }
 
     // MARK: - Table view data source
@@ -33,7 +42,9 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.backgroundColor = UIColor.init(hexString: categories?[indexPath.row].colorHex ?? "#FFFFFF")
+        cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         cell.textLabel?.text = categories?[indexPath.row].name ?? "Pusto :("
         
         return cell
@@ -52,6 +63,7 @@ class CategoryViewController: UITableViewController {
             let category = Category()
             if let categoryName = alertTextField.text {
                 category.name = categoryName
+                category.colorHex = UIColor.randomFlat.hexValue()
                 self.tableView.reloadData()
                 self.saveData(category: category)
             }
@@ -62,6 +74,7 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - delegate methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     
@@ -69,6 +82,7 @@ class CategoryViewController: UITableViewController {
         if let index = tableView.indexPathForSelectedRow {
             let destinationVC = segue.destination as! TodoListViewController
             destinationVC.selectedCategory = categories?[index.row]
+            self.tableView.deselectRow(at: index, animated: false)
         }
     }
     
@@ -88,6 +102,18 @@ class CategoryViewController: UITableViewController {
             print("error savig data \(error)")
         }
         tableView.reloadData()
+    }
+    
+    override func deleteSwipe(at indexPath: IndexPath) {
+        do {
+            try self.realm.write {
+                if let category = self.categories?[indexPath.row] {
+                    self.realm.delete(category)
+                }
+            }
+        } catch {
+            print("error deleting category \(error)")
+        }
     }
     
     
